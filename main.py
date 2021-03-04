@@ -3,7 +3,7 @@ import os
 import random
 from keep_alive import keep_alive
 import replit_db_crud
-import cassiopeia as cass
+import requests
 
 keep_alive()
 
@@ -75,13 +75,12 @@ def get_all_champions():
   return replit_db_crud.get_champs()
 
 def update_champions():
-  #cass.set_riot_api_key(os.getenv('RIOT_KEY'))
   try:
-    cass.set_default_region('NA')
-    champions = cass.get_champions()
+    response = requests.get('https://ddragon.leagueoflegends.com/cdn/11.5.1/data/en_US/champion.json')
+    champ_json = response.json()['data']
     champs = ''
-    for champion in champions:
-      champs += champion.name + ','
+    for key in champ_json.keys():
+      champs += champ_json[key]['name'] + ','
     champs = champs[:-1] #remove last comma from string
     replit_db_crud.save_champs(champs)
     return True
