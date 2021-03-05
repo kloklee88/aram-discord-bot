@@ -1,10 +1,9 @@
 import discord
 import os
-import random
+import aram_service
 from keep_alive import keep_alive
-import replit_db_crud
-import requests
 
+#Flask Server to keep repl.it alive
 keep_alive()
 
 client = discord.Client()
@@ -18,117 +17,64 @@ async def on_message(message):
   if message.author == client.user:
       return
 
+  #Process message commands
   if message.content.startswith('!aram'):
     command = message.content.strip()
     if len(command.split(' ')) == 2:
       aram_command = command.split(' ')[1]
-      print(aram_command)
       if aram_command.startswith('<@!'):
-        result = get_personalized_message(message.mentions[0])
-        await message.channel.send(result)
+        await message.channel.send(personalized_message(message))
       elif aram_command == 'about':
-        await message.channel.send('Randomly selects champions split into 2 teams for ARAM inhouses to simulate re-rolls. Made by yours truly, Kevin :)')
+        await message.channel.send(about(message))
       elif aram_command == 'help':
-        help_message = 'Commands:\n**!aram** -- will default to 15 champions for each team\n**!aram #** -- where # is the number of champions per team, up to a max of 30\n**!aram total** -- show total number of all currently available champions used by the bot\n**!aram all** -- show all currently available champions\n**!aram update** -- get latest champions from Riot (use when list is out of date)\n**!aram about** -- bot description\n**!aram @mention** -- where @mention is anybody in the server to receive a customized message (maybe)'
-        await message.channel.send(help_message)
+        await message.channel.send(help(message))
       elif aram_command == 'all':
-        await message.channel.send(', '.join(get_all_champions()))
+        await message.channel.send(all(message))
       elif aram_command == 'total':
-        await message.channel.send(len(get_all_champions()))
+        await message.channel.send(total(message))
       elif aram_command == 'update':
         await message.channel.send('Running update... please wait...')
-        result = update_champions()
-        if result == True:
-          await message.channel.send('Champions updated!')
-        else:
-          await message.channel.send('Error. Champions were not updated.')
+        await message.channel.send(update(message))
+      elif aram_command == 'lastletter':
+        await message.channel.send(last_letter(message))
       else:
-        try:
-          number_champions = int(aram_command)
-          await message.channel.send(get_balanced_team(number_champions))
-        except:
-          await message.channel.send('Invalid command')
+        await message.channel.send(aram_number(message,aram_command))
     else:
-      await message.channel.send(get_balanced_team(15))
+      await message.channel.send(aram_default(message))
 
-def random_aram(number_champs):
-  champions = get_all_champions()
-  if number_champs > 30:
-    number_champs = 30
-  if number_champs <= 0:
-    number_champs = 1
-  random.shuffle(champions)
-  team_one = champions[0:number_champs]
-  team_two = champions[number_champs+1:number_champs+number_champs+1]
-  team_one.sort()
-  team_two.sort()
-  balanced_team = [team_one, team_two]
-  print(balanced_team)
-  return balanced_team
+def personalized_message(message):
+  return aram_service.get_personalized_message(message.mentions[0])
 
-def get_balanced_team(number_champs):
-  balanced_team = random_aram(number_champs)
-  result = '**Team One:**\n'
-  for champ in balanced_team[0]:
-      result += champ + '\n'
-  result += '\n**Team Two:**\n'
-  for champ in balanced_team[1]:
-      result += champ + '\n'
-  return result
+def about(message):
+  return 'Randomly selects champions split into 2 teams for ARAM inhouses to simulate re-rolls. Made by yours truly, Kevin :)'
 
-def get_all_champions():
-  return replit_db_crud.get_champs()
+def help(message):
+  return 'Commands:\n**!aram** -- will default to 15 champions for each team\n**!aram #** -- where # is the number of champions per team, up to a max of 30\n**!aram total** -- show total number of all currently available champions used by the bot\n**!aram all** -- show all currently available champions\n**!aram update** -- get latest champions from Riot (use when list is out of date)\n**!aram about** -- bot description\n**!aram @mention** -- where @mention is anybody in the server to receive a customized message (maybe)'
 
-def update_champions():
-  try:
-    response = requests.get('https://ddragon.leagueoflegends.com/cdn/11.5.1/data/en_US/champion.json')
-    champ_json = response.json()['data']
-    champs = ''
-    for key in champ_json.keys():
-      champs += champ_json[key]['name'] + ','
-    champs = champs[:-1] #remove last comma from string
-    replit_db_crud.save_champs(champs)
-    return True
-  except:
-    return False
+def all(message):
+  return ', '.join(aram_service.get_all_champions())
 
-def get_personalized_message(user):
-  name = user.name
-  print(name)
-  if name == 'Confucius':
-    result = 'Kevin is awesome!'
-  elif name == 'Not Today':
-    result = 'What do we say to the God of Death?||Not Today||'
-  elif name == 'xXMadreloaderXx':
-    result = 'Hej'
-  elif name == 'Rags':
-    result = '*Top 50 Ashe!*'
-  elif name == 'AGenericName':
-    result = 'All-in? $2000?'
-  elif name == 'Caroline':
-    result = 'Top 2 Locked Camera Player on server - Shurimaaaaaaa *Shuffleeeeeeeeeee*'
-  elif name == 'Cheqelz':
-    result = 'Cheers!!! :beers:'
-  elif name == 'Manoafalls':
-    result = '**#1 ARAM Player** :trophy:'
-  elif name == 'foghi8':
-    result = 'Definitely a ~~MONKEY~~ :monkey_face: good LoL player'
-  elif name == 'Eroc':
-    result = 'Camile says that `Python is an awesome programming language`'
-  elif name == 'Bombogi':
-    result = 'Valorant > League'
-  elif name == 'Buhyun':
-    result = 'TWICE!'
-  elif name == 'Tourbear':
-    result = 'KC :hearts:'
-  elif name == 'ARAM Bot':
-    result = 'Well, thank my creator Kevin, heard he is a great dude. :robot:'
-  elif name == 'Lsw1225':
-    result = 'Warwick is raging'
-  elif 'ellie' in name:
-    result = 'DJJJJJJJJ ~~Khaled~~ Beth :musical_note:'
+def total(message):
+  return len(aram_service.get_all_champions())
+
+def update(message):
+  result = aram_service.update_champions()
+  if result == True:
+    return 'Champions updated!'
   else:
-    result = ':smiley:'
-  return result
+    return 'Error. Champions were not updated.'
+
+def last_letter(message):
+  return aram_service.get_balanced_team(int(15), 'lastletter')
+
+def aram_number(message, aram_command):
+  try:
+    number_champions = int(aram_command)
+    return aram_service.get_balanced_team(number_champions, None)
+  except:
+    return 'Invalid command'
+
+def aram_default(message):
+  return aram_service.get_balanced_team(15, None)
 
 client.run(os.getenv('TOKEN'))
