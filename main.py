@@ -23,7 +23,7 @@ async def on_message(message):
     if len(command.split(' ')) == 2:
       aram_command = command.split(' ')[1]
       if aram_command.startswith('<@!'):
-        await message.channel.send(personalized_message(message))
+        await message.channel.send('You must be looking for Quack bot, use !quack instead')
       elif aram_command == 'about':
         await message.channel.send(about(message))
       elif aram_command == 'help':
@@ -46,10 +46,10 @@ def personalized_message(message):
   return aram_service.get_personalized_message(message.mentions[0])
 
 def about(message):
-  return 'Randomly selects champions split into 2 teams for ARAM inhouses to simulate re-rolls. Made by yours truly, Kevin :)'
+  return 'Randomly selects champions split into 2 teams for ARAM inhouses to simulate re-rolls. Please thank my creator, Kevin :)'
 
 def help(message):
-  return 'Commands:\n**!aram** -- will default to 15 champions for each team\n**!aram #** -- where # is the number of champions per team, up to a max of 30\n**!aram total** -- show total number of all currently available champions used by the bot\n**!aram all** -- show all currently available champions\n**!aram update** -- get latest champions from Riot (use when list is out of date)\n**!aram about** -- bot description\n**!aram @mention** -- where @mention is anybody in the server to receive a customized message (maybe)'
+  return 'Commands:\n**!aram** -- will default to 15 champions for each team\n**!aram #** -- where # is the number of champions per team, up to a max of 30\n**!aram total** -- show total number of all currently available champions used by the bot\n**!aram all** -- show all currently available champions\n**!aram update** -- get latest champions from Riot (use when list is out of date)\n**!aram about** -- bot description\n'
 
 def all(message):
   return ', '.join(aram_service.get_all_champions())
