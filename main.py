@@ -18,10 +18,11 @@ async def on_message(message):
       return
 
   #Process message commands
+  command = message.content.strip().split(' ')
+  print(command)
   if message.content.startswith('!aram'):
-    command = message.content.strip()
-    if len(command.split(' ')) == 2:
-      aram_command = command.split(' ')[1]
+    if len(command) == 2:
+      aram_command = command[1]
       if aram_command.startswith('<@!'):
         await message.channel.send('You must be looking for Quack bot, use !quack instead')
       elif aram_command == 'about':
