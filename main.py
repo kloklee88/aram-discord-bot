@@ -25,56 +25,53 @@ async def on_message(message):
       if aram_command.startswith('<@!'):
         await message.channel.send('You must be looking for Quack bot, use !quack instead')
       elif aram_command == 'about':
-        await message.channel.send(about(message))
+        await message.channel.send(about())
       elif aram_command == 'help':
-        await message.channel.send(help(message))
+        await message.channel.send(help())
       elif aram_command == 'all':
-        await message.channel.send(all(message))
+        await message.channel.send(all())
       elif aram_command == 'total':
-        await message.channel.send(total(message))
+        await message.channel.send(total())
       elif aram_command == 'update':
         await message.channel.send('Running update... please wait...')
-        await message.channel.send(update(message))
+        await message.channel.send(update())
       elif aram_command == 'lastletter':
-        await message.channel.send(last_letter(message))
+        await message.channel.send(last_letter())
       else:
-        await message.channel.send(aram_number(message,aram_command))
+        await message.channel.send(aram_number(aram_command))
     else:
-      await message.channel.send(aram_default(message))
+      await message.channel.send(aram_default())
 
-def personalized_message(message):
-  return aram_service.get_personalized_message(message.mentions[0])
-
-def about(message):
+def about():
   return 'Randomly selects champions split into 2 teams for ARAM inhouses to simulate re-rolls. Please thank my creator, Kevin :)'
 
-def help(message):
+def help():
   return 'Commands:\n**!aram** -- will default to 15 champions for each team\n**!aram #** -- where # is the number of champions per team, up to a max of 30\n**!aram total** -- show total number of all currently available champions used by the bot\n**!aram all** -- show all currently available champions\n**!aram update** -- get latest champions from Riot (use when list is out of date)\n**!aram about** -- bot description\n'
 
-def all(message):
+def all():
   return ', '.join(aram_service.get_all_champions())
 
-def total(message):
+def total():
   return len(aram_service.get_all_champions())
 
-def update(message):
+def update():
   result = aram_service.update_champions()
   if result == True:
     return 'Champions updated!'
   else:
     return 'Error. Champions were not updated.'
 
-def last_letter(message):
+def last_letter():
   return aram_service.get_balanced_team(int(15), 'lastletter')
 
-def aram_number(message, aram_command):
+def aram_number(aram_command):
   try:
     number_champions = int(aram_command)
     return aram_service.get_balanced_team(number_champions, None)
   except:
     return 'Invalid command'
 
-def aram_default(message):
+def aram_default():
   return aram_service.get_balanced_team(15, None)
 
 client.run(os.getenv('TOKEN'))
