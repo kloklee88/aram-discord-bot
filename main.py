@@ -19,8 +19,8 @@ async def on_message(message):
 
   #Process message commands
   command = message.content.strip().split(' ')
-  print(command)
   if message.content.startswith('!aram'):
+    print(command)
     if len(command) == 2:
       aram_command = command[1]
       if aram_command.startswith('<@!'):
