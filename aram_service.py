@@ -37,7 +37,11 @@ def get_all_champions():
 
 def update_champions():
   try:
-    response = requests.get('https://ddragon.leagueoflegends.com/cdn/11.5.1/data/en_US/champion.json')
+    version_response = requests.get('https://ddragon.leagueoflegends.com/api/versions.json')
+    api_version = version_response.json()[0]
+    print(api_version)
+    latest_cdn = f'https://ddragon.leagueoflegends.com/cdn/{api_version}/data/en_US/champion.json'
+    response = requests.get(latest_cdn)
     champ_json = response.json()['data']
     champs = ''
     for key in champ_json.keys():
