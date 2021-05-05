@@ -10,6 +10,8 @@ client = discord.Client()
 
 @client.event
 async def on_ready():
+  activity = discord.Game(name="!aram help")
+  await client.change_presence(activity=activity)
   print('We have logged in as {0.user}'.format(client))
 
 @client.event
