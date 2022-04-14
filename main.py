@@ -39,11 +39,11 @@ async def on_message(message):
         await message.channel.send('Running update... please wait...')
         await message.channel.send(update())
       elif aram_command == 'lastletter':
-        await message.channel.send(last_letter())
+        await message.channel.send(last_letter(), message.author)
       else:
-        await message.channel.send(aram_number(aram_command))
+        await message.channel.send(aram_number(aram_command, message.author))
     else:
-      await message.channel.send(aram_default())
+      await message.channel.send(aram_default(message.author))
 
 def about():
   return 'Randomly selects champions split into 2 teams for ARAM inhouses to simulate re-rolls. Please thank my creator, Kevin :)'
@@ -64,17 +64,17 @@ def update():
   else:
     return 'Error. Champions were not updated.'
 
-def last_letter():
-  return aram_service.get_balanced_team(int(15), 'lastletter')
+def last_letter(user):
+  return aram_service.get_balanced_team(int(15), 'lastletter', user)
 
-def aram_number(aram_command):
+def aram_number(aram_command, user):
   try:
     number_champions = int(aram_command)
-    return aram_service.get_balanced_team(number_champions, None)
+    return aram_service.get_balanced_team(number_champions, None, user)
   except:
     return 'Invalid command'
 
-def aram_default():
-  return aram_service.get_balanced_team(15, None)
+def aram_default(user):
+  return aram_service.get_balanced_team(15, None, user)
 
 client.run(os.getenv('TOKEN'))

@@ -22,9 +22,10 @@ def random_aram(number_champs, sort):
   balanced_team = [team_one, team_two]
   return balanced_team
 
-def get_balanced_team(number_champs, sort):
+def get_balanced_team(number_champs, sort, user):
   balanced_team = random_aram(number_champs, sort)
-  result = '**Team One:**\n'
+  result = "Hi " + str(user) + '\n'
+  result += '**Team One:**\n'
   for champ in balanced_team[0]:
       result += champ + '\n'
   result += '\n**Team Two:**\n'
