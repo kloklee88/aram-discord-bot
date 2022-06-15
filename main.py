@@ -1,10 +1,10 @@
 import discord
 import os
 import aram_service
-from keep_alive import keep_alive
+import never_sleep
 
 #Flask Server to keep repl.it alive
-keep_alive()
+never_sleep.awake('https://aram-discord-bot.kloklee88.repl.co', False)
 
 client = discord.Client()
 
