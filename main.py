@@ -6,7 +6,7 @@ import never_sleep
 #Flask Server to keep repl.it alive
 never_sleep.awake('https://aram-discord-bot.kloklee88.repl.co', False)
 
-client = discord.Client()
+client = discord.Client(intents=discord.Intents.all())
 
 @client.event
 async def on_ready():
@@ -77,4 +77,4 @@ def aram_number(aram_command, user):
 def aram_default(user):
   return aram_service.get_balanced_team(15, None, user)
 
-client.run(os.getenv('TOKEN'))
+client.run('')

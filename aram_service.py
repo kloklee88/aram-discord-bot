@@ -1,6 +1,5 @@
 import random
 import requests
-import replit_db_crud
 
 def last_letter(word):
     return word[::-1]
@@ -34,7 +33,16 @@ def get_balanced_team(number_champs, sort, user):
   return result
 
 def get_all_champions():
-  return replit_db_crud.get_champs()
+  with open('champs.txt') as f:
+    champ_text = f.readlines()
+  champions = champ_text[0].split(',')
+  champions.sort()
+  return champions
+
+def save_champs(champs):
+  f = open('champs.txt', 'w')
+  f.write(champs)
+  f.close()
 
 def update_champions():
   try:
@@ -48,7 +56,7 @@ def update_champions():
     for key in champ_json.keys():
       champs += champ_json[key]['name'] + ','
     champs = champs[:-1] #remove last comma from string
-    replit_db_crud.save_champs(champs)
+    save_champs(champs)
     return True
   except:
     return False
